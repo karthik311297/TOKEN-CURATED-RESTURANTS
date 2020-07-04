@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+    <script src="./allabis.js"></script>
+    <style>
+        .VotenChallenge{
+        width: 65%;
+        margin: 10px;
+      }
+      .VotenChallenge .vote{
+          border: 2px solid black;
+          margin-bottom: 25px
+      }
+      .VotenChallenge .challenge{
+        border: 2px solid black;
+        margin-bottom: 25px
+      }
+      .VotenChallenge .resolve{
+        border: 2px solid black;
+      }
+
+      .checked {
+        color: orange;
+      }
+      .curatedList {
+        width: 40%;
+
+      }
+      .curatedList .card{
+        border-bottom: 2px solid black;
+        border-top: 2px solid black;
+        margin: 10px;
+        padding: 10px;
+      }
+      .detail{
+        float: right;
+        width: 40%;
+      }
+      .detail .param{
+        float: left;
+      }
+      .reviews{
+        margin: 5px;
+        text-align: right;
+      }
+      #sb{
+          margin: 5px;
+      }
+      #sb2{
+          margin: 5px;
+      }
+      #challenger{
+          margin: 5px;
+      }
+      #resolved{
+        margin: 5px;
+      }
+      #deadline{
+        margin: 5px;
+      }
+      #tokens{
+          width: 50%;
+          margin: 5px;
+      }
+    </style>
+    <script>
+      window.addEventListener('load',function(){
+        console.log("hello");
+        if(window.ethereum){
+            window.web3= new Web3(window.ethereum);
+            window.ethereum.enable().then(function(account){
+              console.log(account);
+              document.getElementById("acc").textContent=account[0];
+              var curatedListContract=new web3.eth.Contract(curatedAbi,"0x50e0A5082EB50D9BD218Bcbd4292B70CE0A4C1d4");
+              var tokenContract=new web3.eth.Contract(tokenAbi,"0x90Ca384e6C2733f439ed4EE76488818D60683217");
+              var queueContract=new web3.eth.Contract(queueAbi,"0xB41AB43c81A3b4FB8C847cb0AEF2ea567b018a07");
+              tokenContract.methods.balanceOf(account[0]).call({from:account[0]})
+              .then(function(receipt){
+                document.getElementById("bal").textContent=receipt;
+              });
+              queueContract.methods.getTop("resturants").call({from:account[0]})
+              .then(function(receipt){
+                  curatedListContract.methods.pendingResturants(receipt).call({from:account[0]})
+                  .then(function(receipt){
+                  var restname=receipt[0];
+                  var site=receipt[1];
+                  var loc=receipt[2];
+                  var fq=receipt[3];
+                  var srv=receipt[4];
+                  var amb=receipt[5];
+                  var fqrating='';
+                  var srvrating='';
+                  var ambrating='';
+                  for(var j=0;j<fq;j++){
+                    fqrating+='<span class="fa fa-star checked"></span>';
+                  }
+                  for(var j=0;j<srv;j++){
+                    srvrating+='<span class="fa fa-star checked"></span>';
+                  }
+                  for(var j=0;j<amb;j++){
+                    ambrating+='<span class="fa fa-star checked"></span>';
+                  }
+                  var ele='<div class="card"> <div class="detail"> <div class="param">FOOD QUALITY</div> <div class="reviews">'+fqrating+'</div> <div class="param">SERVICE</div> <div class="reviews">'+srvrating+'</div> <div class="param">AMBIENCE</div> <div class="reviews">'+ambrating+'</div> </div> <h1>'+restname+'</h1> <a href='+site+'><p>Visit Website</p></a> </div>'
+                  document.getElementById('votediv').innerHTML += ele; 
+                  document.getElementById('chgdiv').innerHTML += ele;
+                  });
+                  curatedListContract.methods.challenger(receipt).call({from:account[0]})
+                  .then(function(receipt){
+                    if(receipt == '0x0000000000000000000000000000000000000000')
+                    {
+                      document.getElementById("cha").disabled=false;
+                    }
+                    document.getElementById("cha").onclick=function(){
+                        queueContract.methods.getTop("resturants").call({from:account[0]})
+                        .then(function(receipt){
+                        curatedListContract.methods.challengeApplication(document.getElementById("tokens").value,receipt)
+                        .send({from:account[0]})
+                        .then(function(receipt){
+                          document.getElementById("cha").disabled=true;
+                          tokenContract.methods.balanceOf(account[0]).call({from:account[0]})
+                        .then(function(receipt){
+                          document.getElementById("bal").textContent=receipt;
+                        });
+                        })
+                      });
+                 };
+
+                  });
+              });
+              queueContract.methods.getTop("resturants").call({from:account[0]})
+              .then(function(receipt){
+                curatedListContract.methods.deadlineTime(receipt).call({from:account[0]})
+                .then(function(recv){
+                  console.log(recv);
+                  console.log(Date.now());
+                  // if(parseInt(recv)!=0 && Date.now() >= parseInt(recv)){
+                  //   document.getElementById("resolved").disabled=false;
+                  // }
+                  document.getElementById("deadline").innerHTML=recv;
+                  // if(parseInt(recv)!=0 && Date.now < parseInt(recv)){
+                  //   document.getElementById("sb").disabled=false;
+                  //   document.getElementById("sb2").disabled=false;
+                  // }
+                            document.getElementById("sb").onclick=function(){
+                          queueContract.methods.getTop("resturants").call({from:account[0]})
+                          .then(function(receipt){
+                            curatedListContract.methods.vote(receipt,true).send({from:account[0]})
+                            .then(function(receipt){
+                              document.getElementById("sb").disabled=true;
+                            })
+                          })
+                        };
+                        document.getElementById("sb2").onclick=function(){
+                          queueContract.methods.getTop("resturants").call({from:account[0]})
+                          .then(function(receipt){
+                            curatedListContract.methods.vote(receipt,false).send({from:account[0]})
+                            .then(function(receipt){
+                              document.getElementById("sb2").disabled=true;
+                            })
+                          })
+                        };
+
+                        document.getElementById("resolved").onclick=function(){
+                          curatedListContract.methods.resolveVote().send({from:account[0]})
+                          .then(function(receipt){
+                            document.getElementById("resolved").disabled=true;
+                          })
+                        };
+
+
+                })
+              });
+
+            });
+        }
+      });
+    </script>
+</head>
+<body>
+        <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                  <div class="navbar-header">
+                    <a class="navbar-brand" href="/home">Token Curated Resturants</a>
+                  </div>
+                  <ul class="nav navbar-nav navbar-right">
+                    <li><a id="acc"></span>NONE</a></li>
+                    <li><a id="bal">0</a></li>
+                  </ul>
+                </div>
+        </nav>
+        <div class="VotenChallenge">
+                <div class="vote" id="votediv">  
+                    <input type="button" id="sb" class="btn btn-default" value="VOTE FOR" >              
+                    <input type="button" id="sb2" class="btn btn-default" value="VOTE AGAINST" >        
+                </div>
+                <div class="challenge" id="chgdiv">          
+                        <label for="Tokens">TOKENS:</label>
+                        <input type="number" class="form-control" id="tokens" placeholder=0 name="Tokens">            
+                        <input type="button" id="cha" class="btn btn-default" value="CHALLENGE" disabled=true>
+                </div>
+                <div class="resolve">
+                    <input type="button" id="resolved" class="btn btn-default" value="RESOLVE VOTE" >
+                    <p id="deadline"></p>    
+                </div>
+        </div>
+</body>
+</html>

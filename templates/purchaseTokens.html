@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Buy Tokens</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+    <style>
+            .cont{
+                font-family: verdana;
+                width:40%;
+                height: 50%;
+                padding: 30px;
+                background:#827A73;
+                border-radius: 20px;
+                position: absolute;
+                top:0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+            #sb{
+                border-radius: 6px;
+                margin:0px 0px 3px 0px;
+                border: 2px solid black; 
+                
+            }  
+            #sb:hover{
+                background:skyblue;
+            }        
+            h2{
+              text-align: center;
+            }
+            .but-class{
+                text-align: center;
+            } 
+        </style>
+        <script>
+          window.addEventListener('load',function(){
+            if(window.ethereum){
+              window.web3=new Web3(window.ethereum);
+              window.ethereum.enable().then(function(account){
+                console.log(account);
+                document.getElementById("acc").textContent=account[0];
+                var tokenContractabi=[
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_totalSupply",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_tokenPrice",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_spender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "buyTokens",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_tokenPrice",
+				"type": "uint256"
+			}
+		],
+		"name": "changeTokenPrice",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "exchangeTokensforEther",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "mintTokens",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "minter",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "tokenPrice",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalSupply",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "transfer",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "withdrawContractEther",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];
+            var tokenContract=new web3.eth.Contract(tokenContractabi,"0x90Ca384e6C2733f439ed4EE76488818D60683217");
+            tokenContract.methods.balanceOf(account[0]).call({from:account[0]}).then(function(receipt){
+                document.getElementById("bal").textContent=receipt;
+            })
+            document.getElementById("sb").onclick=function(){
+              tokenContract.methods.buyTokens(document.getElementById("tokens").value)
+              .send({from:account[0],value: web3.utils.toWei(document.getElementById("eth").value,'ether')})
+              .then(function(receipt){
+                tokenContract.methods.balanceOf(account[0]).call({from:account[0]}).then(function(receipt){
+                document.getElementById("bal").textContent=receipt;
+            })  
+              })
+            }
+            }) 
+            }
+          })
+
+        </script>
+</head>
+<body>
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                  <div class="navbar-header">
+                    <a class="navbar-brand" href="/home">Token Curated Resturants</a>
+                  </div>
+                  <ul class="nav navbar-nav navbar-right">
+                    <li><a id="acc">NONE</a></li>
+                    <li><a id="bal">0</a></li>
+                  </ul>
+                </div>
+            </nav>
+            <script>
+                    function convert(){
+                        var numTok=document.getElementById("tokens").value;
+                        document.getElementById("eth").value=(numTok*0.01);
+                    }
+                </script>                   
+                <div class="cont">
+                    <h2>BUY TOKENS</h2>
+                      <div class="form-group">
+                        <label for="Tokens">TOKENS:</label>
+                        <input type="number" class="form-control" id="tokens" placeholder=0 name="Tokens" oninput="convert()">
+                      </div>
+                      <div class="form-group">
+                        <label for="Eth">Eth to Pay:</label>
+                        <input type="number" class="form-control" id="eth" placeholder=0 name="Eth">
+                      </div>
+                      <div class="but-class">
+                      <input type="button" id="sb" class="btn btn-default" value="BUY">
+                      </div>
+            </div>
+
+</body>
+
+</html>
