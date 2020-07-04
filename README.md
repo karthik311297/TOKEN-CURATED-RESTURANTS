@@ -4,7 +4,7 @@ Decentralized app on Ethereum Blockchain for Token Curated Registry using solidi
 
 INSTRUCTION BEFORE RUNNING:
 1) The frontend of the project is in the folder templates
-2) The solidity smart contracts are in the contracts folder as text files,copy and paste contents to remix ide, run it on remix ide and deploy to your local blockchain.
+2) The Solidity smart contracts are in the contracts folder,copy and paste contents to remix ide, run it on remix ide and deploy to your local blockchain.
 3) Once smart contract is deployed, update the contract address used in the frontend for web.js calls.
 
 To run the project use
