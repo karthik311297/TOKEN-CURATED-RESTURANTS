@@ -7,7 +7,7 @@ INSTRUCTION BEFORE RUNNING:
 2) install dependencies mentioned in package json file    ``` npm install ```
 3) The frontend of the project is in the folder templates
 4) The Solidity smart contracts are in the contracts folder,copy and paste contents to remix ide, run it on remix ide and deploy to your local blockchain.
-5) Once smart contract is deployed, update the contract address used in the frontend for web.js calls.
+5) Once smart contract is deployed, update the contract address used in the frontend for web3.js calls.
 
 To run the project use
 
